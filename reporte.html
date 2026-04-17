@@ -38,6 +38,27 @@
     box-shadow:0 4px 15px rgba(0,0,0,.12)}
   .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
 
+  /* Filter bar */
+  .filter-bar{background:var(--card);border:1px solid var(--border);border-radius:16px;
+    padding:16px 20px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.05);
+    display:flex;flex-direction:column;gap:12px}
+  .filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .filter-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.8px;min-width:64px;flex-shrink:0}
+  .fpill{background:transparent;border:1px solid var(--border);color:var(--muted);
+    padding:5px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+    transition:all .15s;font-family:inherit;line-height:1.4}
+  .fpill:hover{border-color:var(--purple);color:var(--purple);background:rgba(91,79,207,.04)}
+  .fpill.active{background:var(--heading);border-color:var(--heading);color:#fff}
+  .fpill.barber-active{background:var(--teal);border-color:var(--teal);color:#fff}
+  .filter-status{font-size:12px;color:var(--muted);font-style:italic;padding-top:2px;
+    border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .filter-status span{color:var(--purple);font-weight:600;font-style:normal}
+  .reset-btn{background:none;border:1px solid var(--border);color:var(--muted);
+    padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
+    font-family:inherit;transition:all .15s}
+  .reset-btn:hover{border-color:var(--accent);color:var(--accent)}
+
   /* Header */
   header{
     background:linear-gradient(135deg,#1a1a2e 0%,#2c3e50 50%,#34495e 100%);
@@ -76,7 +97,8 @@
   .score:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
   .score .glow{position:absolute;top:0;left:0;right:0;height:3px}
   .score .slabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700}
-  .score .sval{font-size:26px;font-weight:900;margin:8px 0 4px;letter-spacing:-.5px}
+  .score .sval{font-size:26px;font-weight:900;margin:8px 0 4px;letter-spacing:-.5px;
+    transition:all .3s}
   .score .starget{font-size:12px;color:var(--muted)}
   .score .status{margin-top:10px;font-size:10px;font-weight:800;text-transform:uppercase;
     letter-spacing:.8px;padding:5px 12px;border-radius:8px;display:inline-block}
@@ -102,6 +124,7 @@
   .chart-wrap h3{margin:0 0 12px;font-size:14px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
   .chart-wrap .cnt{position:relative;height:280px}
   .chart-full .cnt{height:340px}
+  .chart-wrap .chart-note{font-size:11px;color:var(--muted);margin-top:8px;font-style:italic}
 
   /* Tables */
   table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
@@ -157,60 +180,37 @@
   @media print{
     *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
     body{background:#fff !important}
-    .toolbar{display:none !important}
+    .toolbar,.filter-bar{display:none !important}
     .wrap{max-width:100%;padding:0 8px;margin:0}
-
-    /* Remove all hover/transform effects */
     *{transition:none !important;transform:none !important}
-
-    /* Flatten all containers */
     header,.card,.chart-wrap,.score,.callout,.summary-box{
       box-shadow:none !important;border:1px solid #ccc !important}
-
-    /* Force single-column layouts so nothing gets cut */
     .scorecard{grid-template-columns:repeat(5,1fr) !important;gap:8px !important}
     .chart-row{grid-template-columns:1fr !important;gap:12px !important}
     .two-col{grid-template-columns:1fr !important;gap:12px !important}
     .callout-row{grid-template-columns:repeat(3,1fr) !important;gap:8px !important}
-
-    /* Charts: auto height so they scale to fit, no overflow */
     .chart-wrap .cnt{height:240px !important;overflow:visible !important}
     .chart-full .cnt{height:280px !important}
     canvas{max-width:100% !important}
-
-    /* Heatmap: shrink to fit */
     .heatmap{font-size:10px !important;border-spacing:2px !important}
     .heatmap td{padding:8px 3px !important;font-size:11px !important}
     .heatmap .row-label{padding:8px 4px !important;font-size:10px !important}
-
-    /* Tables: prevent overflow */
     table{font-size:11px !important;width:100% !important;table-layout:fixed !important}
     td,th{padding:8px 10px !important;word-wrap:break-word !important;overflow-wrap:break-word !important}
-
-    /* Scorecards: compact */
     .score{padding:12px 8px !important}
     .score .sval{font-size:20px !important}
     .score .slabel{font-size:9px !important}
     .score .starget{font-size:10px !important}
-
-    /* Page settings */
     @page{size:letter;margin:8mm}
-
-    /* Avoid page breaks inside key elements */
     .card,.chart-wrap,.score,.callout,.summary-box{break-inside:avoid;page-break-inside:avoid}
     h2.section{page-break-after:avoid;break-after:avoid}
     table{break-inside:auto}
     tr{break-inside:avoid;page-break-inside:avoid}
-
-    /* Force chart rows to stack and each take full width */
     .chart-wrap{width:100% !important;margin-bottom:12px !important}
-
-    /* Section spacing */
     h2.section{margin-top:24px !important}
     header{padding:24px !important;margin-bottom:16px !important}
     header h1{font-size:28px !important}
   }
-  /* ── RESPONSIVE ── */
   @media (max-width:780px){
     .wrap{padding:20px 16px 60px}
     header{padding:28px 24px 26px;border-radius:14px}
@@ -228,6 +228,9 @@
     .heatmap{min-width:520px}
     .toolbar{justify-content:center}
     .btn{width:100%;text-align:center;box-sizing:border-box}
+    .filter-bar{padding:12px 14px}
+    .filter-label{min-width:52px}
+    .fpill{font-size:11px;padding:4px 10px}
   }
   @media (max-width:480px){
     .wrap{padding:14px 12px 48px}
@@ -266,6 +269,43 @@
     <button class="btn" onclick="window.print()">Exportar PDF / Imprimir</button>
   </div>
 
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Mes:</span>
+      <div id="monthPills">
+        <button class="fpill active" data-m="-1">Todos</button>
+        <button class="fpill" data-m="0">Ene</button>
+        <button class="fpill" data-m="1">Feb</button>
+        <button class="fpill" data-m="2">Mar</button>
+        <button class="fpill" data-m="3">Abr</button>
+        <button class="fpill" data-m="4">May</button>
+        <button class="fpill" data-m="5">Jun</button>
+        <button class="fpill" data-m="6">Jul</button>
+        <button class="fpill" data-m="7">Ago</button>
+        <button class="fpill" data-m="8">Sep</button>
+        <button class="fpill" data-m="9">Oct</button>
+        <button class="fpill" data-m="10">Nov</button>
+        <button class="fpill" data-m="11">Dic</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Barbero:</span>
+      <div id="barberPills">
+        <button class="fpill active" data-b="-1">Todos</button>
+        <button class="fpill" data-b="0">Carlos</button>
+        <button class="fpill" data-b="1">Miguel</button>
+        <button class="fpill" data-b="2">Javier</button>
+        <button class="fpill" data-b="3">Diego</button>
+        <button class="fpill" data-b="4">Andr&eacute;s</button>
+      </div>
+    </div>
+    <div class="filter-status">
+      <span id="filterLabel">Mostrando todos los meses &middot; todos los barberos</span>
+      <button class="reset-btn" onclick="resetFilters()">Resetear filtros</button>
+    </div>
+  </div>
+
   <header>
     <div class="tag">Reporte Financiero</div>
     <h1>Studio M</h1>
@@ -288,39 +328,39 @@
   <div class="card">
     <div class="scorecard">
       <div class="score">
-        <div class="glow" style="background:linear-gradient(90deg,var(--warm),transparent)"></div>
-        <div class="slabel">Ingresos (YTD)</div>
-        <div class="sval" style="color:var(--gold)">$486,200</div>
-        <div class="starget">Meta: $540,000</div>
-        <div class="status warn">Un poco abajo</div>
+        <div class="glow" style="background:linear-gradient(90deg,var(--warn),transparent)"></div>
+        <div class="slabel" id="kpi-rev-label">Ingresos (YTD)</div>
+        <div class="sval" style="color:var(--gold)" id="kpi-rev">$486,200</div>
+        <div class="starget" id="kpi-rev-target">Meta: $540,000</div>
+        <div class="status warn" id="kpi-rev-status">Un poco abajo</div>
       </div>
       <div class="score">
         <div class="glow" style="background:linear-gradient(90deg,var(--bad),transparent)"></div>
         <div class="slabel">Uso de Sillas</div>
-        <div class="sval" style="color:var(--accent)">64%</div>
+        <div class="sval" style="color:var(--accent)" id="kpi-util">64%</div>
         <div class="starget">Meta: 78%</div>
-        <div class="status bad">Necesita atenci&oacute;n</div>
+        <div class="status bad" id="kpi-util-status">Necesita atenci&oacute;n</div>
       </div>
       <div class="score">
-        <div class="glow" style="background:linear-gradient(90deg,var(--warm),transparent)"></div>
+        <div class="glow" style="background:linear-gradient(90deg,var(--warn),transparent)"></div>
         <div class="slabel">Ticket Promedio</div>
-        <div class="sval" style="color:var(--gold)">$42</div>
+        <div class="sval" style="color:var(--gold)" id="kpi-ticket">$42</div>
         <div class="starget">Meta: $52</div>
-        <div class="status warn">Un poco abajo</div>
+        <div class="status warn" id="kpi-ticket-status">Un poco abajo</div>
       </div>
       <div class="score">
         <div class="glow" style="background:linear-gradient(90deg,var(--bad),transparent)"></div>
         <div class="slabel">Clientes que No Llegan</div>
-        <div class="sval" style="color:var(--accent)">9.1%</div>
+        <div class="sval" style="color:var(--accent)" id="kpi-noshow">9.1%</div>
         <div class="starget">Meta: menos de 5%</div>
-        <div class="status bad">Necesita atenci&oacute;n</div>
+        <div class="status bad" id="kpi-noshow-status">Necesita atenci&oacute;n</div>
       </div>
       <div class="score">
-        <div class="glow" style="background:linear-gradient(90deg,var(--warm),transparent)"></div>
+        <div class="glow" style="background:linear-gradient(90deg,var(--warn),transparent)"></div>
         <div class="slabel">Ganancia Neta</div>
-        <div class="sval" style="color:var(--gold)">10.7%</div>
+        <div class="sval" style="color:var(--gold)" id="kpi-profit">10.7%</div>
         <div class="starget">Meta: 15%</div>
-        <div class="status warn">Un poco abajo</div>
+        <div class="status warn" id="kpi-profit-status">Un poco abajo</div>
       </div>
     </div>
   </div>
@@ -331,6 +371,7 @@
     <div class="chart-wrap">
       <h3>Ingresos por Mes</h3>
       <div class="cnt"><canvas id="revChart"></canvas></div>
+      <p class="chart-note">Haz clic en una barra para filtrar ese mes</p>
     </div>
     <div class="chart-wrap">
       <h3>Clientes por Mes</h3>
@@ -367,7 +408,7 @@
 
   <div class="card">
     <h3 style="color:var(--muted);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">
-      Mapa de Calor: Clientes por hora (promedio de los &uacute;ltimos 90 d&iacute;as)
+      Mapa de Calor: Clientes por hora (promedio de los &uacute;ltimos 90 d&iacute;as &mdash; vista general)
     </h3>
     <p style="color:var(--muted);font-size:12px;margin-bottom:16px">
       Los n&uacute;meros muestran cu&aacute;ntos clientes hay por hora. Tenemos 4 sillas, entonces 4.0 es el m&aacute;ximo.
@@ -628,6 +669,7 @@
 </div>
 
 <script>
+// ─── COLORS ───────────────────────────────────────────────────────────────────
 const accent="#c0392b",accent2="#e74c3c",gold="#e67e22",gold2="#f39c12",
       teal="#1a9e8f",teal2="#16a085",purple="#5b4fcf",purple2="#7c6fe0",
       sky="#2980b9",sky2="#3498db",heading="#1a1a2e",
@@ -637,36 +679,219 @@ Chart.defaults.font.family="'Inter',system-ui,sans-serif";
 Chart.defaults.font.size=11;
 Chart.defaults.color="#7f8c8d";
 const fmt$=v=>"$"+v.toLocaleString();
-function makeGrad(ctx,a,b){const g=ctx.createLinearGradient(0,0,0,300);g.addColorStop(0,a);g.addColorStop(1,b);return g;}
 
-const months=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-const revenue=[38200,35400,46800,49100,53200,58900,60100,55800,52400,48700,54600,62800];
-const clients=[910,840,1120,1170,1270,1400,1430,1330,1250,1160,1300,1500];
-const realRate=[56,52,62,64,68,74,76,72,67,63,70,78];
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const MONTHS=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const DAYS=["Mar","Mi\u00e9","Jue","Vie","S\u00e1b"];
+const BARBERS=["Carlos","Miguel","Javier","Diego","Andr\u00e9s"];
 
-// Heatmap
-const heatData={
-  "Mar":[1.2,1.8,2.1,2.4,2.0,1.4,1.6,2.2,2.6,1.8],
-  "Mi\u00e9":[1.4,1.9,2.2,2.5,2.1,1.5,1.7,2.4,2.8,2.0],
-  "Jue":[1.8,2.6,3.0,3.2,2.8,2.0,2.4,3.2,3.6,3.0],
-  "Vie":[2.0,2.8,3.2,3.4,3.0,2.2,2.8,3.6,3.8,3.4],
-  "S\u00e1b":[3.4,3.8,3.8,3.6,3.6,3.4,3.6,3.8,3.2,0]
-};
+// Revenue [barber][month] — each column sums to original monthly total
+const REV=[
+  [9900,9200,12200,12800,13800,15300,15600,14500,13600,12700,14200,16300],
+  [8400,7800,10300,10800,11700,13000,13200,12300,11500,10700,12000,13800],
+  [7200,6700,8900,9300,10100,11200,11400,10600,9900,9200,10400,11900],
+  [6500,6000,7900,8300,9000,9900,10100,9400,8800,8200,9200,10600],
+  [6200,5700,7500,7900,8600,9500,9800,9000,8600,7900,8800,10200]
+];
+
+// Clients [barber][month]
+const CLI=[
+  [237,218,291,304,330,364,372,346,325,302,338,390],
+  [200,185,246,257,279,308,315,293,275,255,286,330],
+  [173,160,213,222,241,266,272,253,238,220,247,285],
+  [155,143,190,199,216,238,243,226,213,197,221,255],
+  [146,134,180,188,204,224,229,213,200,186,208,240]
+];
+
+// Seat utilization % [barber][month]
+const UTIL=[
+  [68,64,74,76,80,86,88,84,79,75,82,90],
+  [62,58,68,70,74,80,82,78,73,69,76,84],
+  [56,52,62,64,68,74,76,72,67,63,70,78],
+  [48,44,54,56,60,66,68,64,59,55,62,70],
+  [50,46,56,58,62,68,70,66,61,57,64,72]
+];
+
+// Service mix [barber] → [Corte,Corte+Barba,SoloBarba,Niños,Afeitada,Color,Cuero]
+const SVC=[
+  [50,25,10,5,5,3,2],
+  [55,20,10,6,4,3,2],
+  [62,15,8,8,4,2,1],
+  [60,15,8,10,4,2,1],
+  [58,18,8,7,4,3,2]
+];
+const SVC_ALL=[58,18,8,7,4,3,2];
+
+// Day revenue [barber] → [Mar,Mié,Jue,Vie,Sáb]
+const DREV=[
+  [360,400,560,680,720],
+  [305,340,480,580,610],
+  [260,290,410,490,520],
+  [240,270,380,460,490],
+  [255,280,410,470,500]
+];
+const DREV_ALL=[1420,1580,2240,2680,2840];
+
+// Day utilization % [barber]
+const DUTIL=[
+  [56,61,78,90,100],
+  [50,55,72,84,98],
+  [42,47,64,74,90],
+  [38,43,58,68,84],
+  [42,49,66,77,92]
+];
+const DUTIL_ALL=[46,51,68,79,94];
+
+// No-show rate by barber / by month (used to blend KPI)
+const NOSHOW_B=[7.2,8.4,9.5,11.2,9.8];
+const NOSHOW_M=[11.2,10.8,9.8,9.1,8.9,8.4,8.2,8.8,9.2,9.6,9.0,8.5];
+
+// Profit margin % by month / by barber
+const PROFIT_M=[8.2,8.0,10.2,10.7,11.4,12.1,12.4,11.8,11.2,10.6,11.5,12.8];
+const PROFIT_B=[11.2,10.9,10.6,10.3,10.8];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let S={m:-1,b:-1}; // -1 = all
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function sum(a){return a.reduce((t,v)=>t+v,0);}
+function avg(a){return sum(a)/a.length;}
+
+function revByMonth(){
+  return MONTHS.map((_,mi)=>S.b===-1?sum(REV.map(br=>br[mi])):REV[S.b][mi]);
+}
+function cliByMonth(){
+  return MONTHS.map((_,mi)=>S.b===-1?sum(CLI.map(br=>br[mi])):CLI[S.b][mi]);
+}
+function utilByMonth(){
+  return MONTHS.map((_,mi)=>S.b===-1?Math.round(avg(UTIL.map(br=>br[mi]))):UTIL[S.b][mi]);
+}
+
+function totalRev(){const a=revByMonth();return S.m===-1?sum(a):a[S.m];}
+function totalCli(){const a=cliByMonth();return S.m===-1?sum(a):a[S.m];}
+function avgUtil(){const a=utilByMonth();return S.m===-1?Math.round(avg(a)):a[S.m];}
+
+function noShow(){
+  let ns=S.b!==-1?NOSHOW_B[S.b]:avg(NOSHOW_B);
+  if(S.m!==-1)ns=(ns+NOSHOW_M[S.m])/2;
+  return ns.toFixed(1);
+}
+function profitPct(){
+  if(S.m!==-1)return PROFIT_M[S.m].toFixed(1);
+  if(S.b!==-1)return PROFIT_B[S.b].toFixed(1);
+  return "10.7";
+}
+
+function dayRev(){return S.b===-1?DREV_ALL:DREV[S.b];}
+function dayUtil(){return S.b===-1?DUTIL_ALL:DUTIL[S.b];}
+function svcMix(){return S.b===-1?SVC_ALL:SVC[S.b];}
+
+// Dim non-selected bars when a month is chosen
+function monthColors(baseArr){
+  if(S.m===-1)return baseArr;
+  return baseArr.map((c,i)=>i===S.m?c:c+"44");
+}
+
+// ─── CHARTS ───────────────────────────────────────────────────────────────────
+const C={};
+
+function makeGrad(ctx,a,b){
+  const g=ctx.createLinearGradient(0,0,0,300);
+  g.addColorStop(0,a);g.addColorStop(1,b);return g;
+}
+
+// Revenue bar
 (function(){
+  const ctx=document.getElementById("revChart").getContext("2d");
+  const baseColors=MONTHS.map((_,i)=>{
+    if(i<=1)return accent;if(i>=4&&i<=6)return teal;if(i>=10)return teal;return purple;
+  });
+  C.rev=new Chart(ctx,{
+    type:"bar",
+    data:{labels:MONTHS,datasets:[{label:"Ingresos",data:revByMonth(),
+      backgroundColor:monthColors(baseColors),borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      onClick(e,els){if(els.length){const i=els[0].index;setMonth(i===S.m?-1:i);}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
+      scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false}}}}
+  });
+  C.rev._baseColors=baseColors;
+})();
+
+// Client line
+(function(){
+  const ctx=document.getElementById("clientChart").getContext("2d");
+  const area=ctx.createLinearGradient(0,0,0,280);
+  area.addColorStop(0,"rgba(91,79,207,.25)");area.addColorStop(1,"rgba(91,79,207,.02)");
+  C.cli=new Chart(ctx,{
+    type:"line",
+    data:{labels:MONTHS,datasets:[{label:"Clientes",data:cliByMonth(),
+      borderColor:purple,backgroundColor:area,fill:true,tension:.4,
+      pointBackgroundColor:MONTHS.map((_,i)=>i===S.m?gold:purple2),
+      pointRadius:MONTHS.map((_,i)=>i===S.m?8:4),
+      pointHoverRadius:7,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      onClick(e,els){if(els.length){const i=els[0].index;setMonth(i===S.m?-1:i);}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" clientes"}}},
+      scales:{y:{grid:{color:"rgba(0,0,0,0.06)"}},x:{grid:{display:false}}}}
+  });
+})();
+
+// Day revenue
+(function(){
+  const ctx=document.getElementById("dayRevChart").getContext("2d");
+  const dColors=[accent,accent,purple,purple2,teal];
+  C.drev=new Chart(ctx,{
+    type:"bar",
+    data:{labels:DAYS,datasets:[{label:"Ingreso Promedio",data:dayRev(),
+      backgroundColor:dColors,borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
+      scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Day utilization
+(function(){
+  const ctx=document.getElementById("dayRealChart").getContext("2d");
+  const du=dayUtil();
+  C.dutil=new Chart(ctx,{
+    type:"bar",
+    data:{labels:DAYS,datasets:[{label:"Uso %",data:du,
+      backgroundColor:du.map(v=>v>=75?teal:v>=60?gold:accent),
+      borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+"%"}}},
+      scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"},max:100},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Heatmap (static aggregate)
+(function(){
+  const heatData={
+    "Mar":[1.2,1.8,2.1,2.4,2.0,1.4,1.6,2.2,2.6,1.8],
+    "Mi\u00e9":[1.4,1.9,2.2,2.5,2.1,1.5,1.7,2.4,2.8,2.0],
+    "Jue":[1.8,2.6,3.0,3.2,2.8,2.0,2.4,3.2,3.6,3.0],
+    "Vie":[2.0,2.8,3.2,3.4,3.0,2.2,2.8,3.6,3.8,3.4],
+    "S\u00e1b":[3.4,3.8,3.8,3.6,3.6,3.4,3.6,3.8,3.2,0]
+  };
   const tbody=document.querySelector("#heatmapTable tbody");
   for(const[day,vals]of Object.entries(heatData)){
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="row-label">${day}</td>`;
+    tr.innerHTML='<td class="row-label">'+day+'</td>';
     vals.forEach(v=>{
       const td=document.createElement("td");
       if(v===0){td.textContent="Cerrado";td.style.background="#f0f0f0";td.style.color=muted;}
       else{
         const pct=v/4;
         let bg;
-        if(pct>=.85) bg="#1a9e8f";
-        else if(pct>=.7) bg="#2ecc71";
-        else if(pct>=.55) bg="#f39c12";
-        else if(pct>=.4) bg="#f5c96a";
+        if(pct>=.85)bg="#1a9e8f";
+        else if(pct>=.7)bg="#2ecc71";
+        else if(pct>=.55)bg="#f39c12";
+        else if(pct>=.4)bg="#f5c96a";
         else bg="#e74c3c";
         td.style.background=bg;td.style.color="#fff";
         td.textContent=v.toFixed(1);
@@ -677,84 +902,29 @@ const heatData={
   }
 })();
 
-// Revenue chart
-(function(){
-  const ctx=document.getElementById("revChart").getContext("2d");
-  const colors=revenue.map((_,i)=>{
-    if(i<=1)return accent;if(i>=4&&i<=6)return teal;if(i>=10)return teal;return purple;
-  });
-  new Chart(ctx,{type:"bar",data:{labels:months,datasets:[{label:"Ingresos",data:revenue,
-    backgroundColor:colors,borderRadius:8,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
-      scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:"rgba(0,0,0,0.06)"}},
-        x:{grid:{display:false}}}}
-  });
-})();
-
-// Client chart
-(function(){
-  const ctx=document.getElementById("clientChart").getContext("2d");
-  const area=ctx.createLinearGradient(0,0,0,280);
-  area.addColorStop(0,"rgba(91,79,207,.25)");area.addColorStop(1,"rgba(91,79,207,.02)");
-  new Chart(ctx,{type:"line",data:{labels:months,datasets:[{label:"Clientes",data:clients,
-    borderColor:purple,backgroundColor:area,fill:true,tension:.4,pointBackgroundColor:purple2,
-    pointRadius:4,pointHoverRadius:7,borderWidth:3}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" clientes"}}},
-      scales:{y:{grid:{color:"rgba(0,0,0,0.06)"}},
-        x:{grid:{display:false}}}}
-  });
-})();
-
-// Day revenue
-(function(){
-  const ctx=document.getElementById("dayRevChart").getContext("2d");
-  const days=["Mar","Mi\u00e9","Jue","Vie","S\u00e1b"];
-  const dayRev=[1420,1580,2240,2680,2840];
-  const colors=[accent,accent,purple,purple2,teal];
-  new Chart(ctx,{type:"bar",data:{labels:days,datasets:[{label:"Ingreso Promedio",data:dayRev,
-    backgroundColor:colors,borderRadius:8,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
-      scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:"rgba(0,0,0,0.06)"}},
-        x:{grid:{display:false}}}}
-  });
-})();
-
-// Day realization
-(function(){
-  const ctx=document.getElementById("dayRealChart").getContext("2d");
-  const days=["Mar","Mi\u00e9","Jue","Vie","S\u00e1b"];
-  const dayReal=[46,51,68,79,94];
-  const colors=dayReal.map(v=>v>=75?teal:v>=60?gold:accent);
-  new Chart(ctx,{type:"bar",data:{labels:days,datasets:[{label:"Uso %",data:dayReal,
-    backgroundColor:colors,borderRadius:8,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+"%"}}},
-      scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"},max:100},
-        x:{grid:{display:false}}}}
-  });
-})();
-
 // Service pie
-new Chart(document.getElementById("servicePie"),{type:"doughnut",
-  data:{labels:["Corte","Corte+Barba","Solo Barba","Ni\u00f1os","Afeitada","Color","Cuero Cab."],
-    datasets:[{data:[58,18,8,7,4,3,2],
-      backgroundColor:[purple,teal,sky,gold,accent,purple2,teal2],borderWidth:2,borderColor:"#fff"}]},
-  options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
-    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:8}},
-      tooltip:{callbacks:{label:c=>c.label+": "+c.parsed+"%"}}}}
-});
+(function(){
+  const svcLabels=["Corte","Corte+Barba","Solo Barba","Ni\u00f1os","Afeitada","Color","Cuero Cab."];
+  const svcColors=[purple,teal,sky,gold,accent,purple2,teal2];
+  C.svc=new Chart(document.getElementById("servicePie"),{
+    type:"doughnut",
+    data:{labels:svcLabels,datasets:[{data:svcMix(),
+      backgroundColor:svcColors,borderWidth:2,borderColor:"#fff"}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
+      plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:8}},
+        tooltip:{callbacks:{label:c=>c.label+": "+c.parsed+"%"}}}}
+  });
+})();
 
-// Revenue per hour
+// Service ticket (static)
 (function(){
   const ctx=document.getElementById("serviceTicket").getContext("2d");
-  new Chart(ctx,{type:"bar",data:{labels:["Corte","Corte+B","Barba","Ni\u00f1os","Afeitada","Color","Cuero C."],
-    datasets:[
-      {label:"Precio",data:[35,50,20,22,40,65,30],backgroundColor:purple,borderRadius:5},
-      {label:"Ganancia/Hora",data:[70,75,80,66,80,87,90],backgroundColor:teal,borderRadius:5}
-    ]},
+  new Chart(ctx,{type:"bar",
+    data:{labels:["Corte","Corte+B","Barba","Ni\u00f1os","Afeitada","Color","Cuero C."],
+      datasets:[
+        {label:"Precio",data:[35,50,20,22,40,65,30],backgroundColor:purple,borderRadius:5},
+        {label:"Ganancia/Hora",data:[70,75,80,66,80,87,90],backgroundColor:teal,borderRadius:5}
+      ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": $"+c.parsed.y}}},
       scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:"rgba(0,0,0,0.06)"}},
@@ -762,34 +932,42 @@ new Chart(document.getElementById("servicePie"),{type:"doughnut",
   });
 })();
 
-// Realization trend
+// Utilization trend
 (function(){
   const ctx=document.getElementById("realChart").getContext("2d");
   const area=ctx.createLinearGradient(0,0,0,280);
   area.addColorStop(0,"rgba(230,126,34,.2)");area.addColorStop(1,"rgba(230,126,34,.02)");
-  new Chart(ctx,{type:"line",data:{labels:months,datasets:[
-    {label:"Uso de Sillas %",data:realRate,borderColor:gold,backgroundColor:area,fill:true,
-      tension:.4,pointBackgroundColor:gold2,pointRadius:4,pointHoverRadius:7,borderWidth:3},
-    {label:"Meta",data:Array(12).fill(78),borderColor:teal,borderDash:[6,6],borderWidth:2,fill:false,pointRadius:0}
-  ]},
+  C.util=new Chart(ctx,{
+    type:"line",
+    data:{labels:MONTHS,datasets:[
+      {label:"Uso de Sillas %",data:utilByMonth(),borderColor:gold,backgroundColor:area,fill:true,
+        tension:.4,
+        pointBackgroundColor:MONTHS.map((_,i)=>i===S.m?purple:gold2),
+        pointRadius:MONTHS.map((_,i)=>i===S.m?8:4),
+        pointHoverRadius:7,borderWidth:3},
+      {label:"Meta",data:Array(12).fill(78),borderColor:teal,borderDash:[6,6],
+        borderWidth:2,fill:false,pointRadius:0}
+    ]},
     options:{responsive:true,maintainAspectRatio:false,
+      onClick(e,els){if(els.length&&els[0].datasetIndex===0){const i=els[0].index;setMonth(i===S.m?-1:i);}},
       plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.y+"%"}}},
-      scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"},min:40,max:90},
+      scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"},min:40,max:100},
         x:{grid:{display:false}}}}
   });
 })();
 
-// Lost capacity
+// Lost capacity (static)
 (function(){
   const ctx=document.getElementById("lostCapChart").getContext("2d");
-  new Chart(ctx,{type:"bar",data:{labels:["Tiempo de la Silla"],
-    datasets:[
-      {label:"Productivo (64%)",data:[64],backgroundColor:teal,borderRadius:0},
-      {label:"Sin reserva (18%)",data:[18],backgroundColor:purple,borderRadius:0},
-      {label:"No llegaron (9%)",data:[9],backgroundColor:accent,borderRadius:0},
-      {label:"Huecos (5%)",data:[5],backgroundColor:gold,borderRadius:0},
-      {label:"Admin (4%)",data:[4],backgroundColor:"#bdc3c7",borderRadius:0}
-    ]},
+  new Chart(ctx,{type:"bar",
+    data:{labels:["Tiempo de la Silla"],
+      datasets:[
+        {label:"Productivo (64%)",data:[64],backgroundColor:teal,borderRadius:0},
+        {label:"Sin reserva (18%)",data:[18],backgroundColor:purple,borderRadius:0},
+        {label:"No llegaron (9%)",data:[9],backgroundColor:accent,borderRadius:0},
+        {label:"Huecos (5%)",data:[5],backgroundColor:gold,borderRadius:0},
+        {label:"Admin (4%)",data:[4],backgroundColor:"#bdc3c7",borderRadius:0}
+      ]},
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:"bottom",labels:{boxWidth:12}},
         tooltip:{callbacks:{label:c=>c.dataset.label}}},
@@ -798,22 +976,25 @@ new Chart(document.getElementById("servicePie"),{type:"doughnut",
   });
 })();
 
-// Expense pie
-new Chart(document.getElementById("expPie"),{type:"doughnut",
+// Expense pie (static)
+new Chart(document.getElementById("expPie"),{
+  type:"doughnut",
   data:{labels:["Personal","Productos","Renta","Recepci\u00f3n","Servicios","Tarjetas","Marketing","Seguro","Equipo","Otros"],
     datasets:[{data:[298200,76600,72000,42120,18200,17500,16200,10800,9800,7580],
-      backgroundColor:[purple,gold,teal,accent,sky,purple2,teal2,accent2,dusty,"#bdc3c7"],borderWidth:2,borderColor:"#fff"}]},
+      backgroundColor:[purple,gold,teal,accent,sky,purple2,teal2,accent2,dusty,"#bdc3c7"],
+      borderWidth:2,borderColor:"#fff"}]},
   options:{responsive:true,maintainAspectRatio:false,cutout:"58%",
     plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:10},padding:6}},
       tooltip:{callbacks:{label:c=>c.label+": "+fmt$(c.parsed)}}}}
 });
 
-// Expense bar
+// Expense bar (static)
 (function(){
   const ctx=document.getElementById("expBar").getContext("2d");
-  new Chart(ctx,{type:"bar",data:{labels:["Personal","Productos","Renta","Recepci\u00f3n","Servicios","Tarjetas","Marketing","Seguro"],
-    datasets:[{label:"% de Ingresos",data:[46.0,11.8,11.1,6.5,2.8,2.7,2.5,1.7],
-      backgroundColor:[purple,gold,teal,accent,sky,purple2,teal2,accent2],borderRadius:6}]},
+  new Chart(ctx,{type:"bar",
+    data:{labels:["Personal","Productos","Renta","Recepci\u00f3n","Servicios","Tarjetas","Marketing","Seguro"],
+      datasets:[{label:"% de Ingresos",data:[46.0,11.8,11.1,6.5,2.8,2.7,2.5,1.7],
+        backgroundColor:[purple,gold,teal,accent,sky,purple2,teal2,accent2],borderRadius:6}]},
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+"%"}}},
       scales:{x:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"}},
@@ -821,8 +1002,9 @@ new Chart(document.getElementById("expPie"),{type:"doughnut",
   });
 })();
 
-// KPI comparison
-new Chart(document.getElementById("kpiChart"),{type:"bar",
+// KPI comparison (static)
+new Chart(document.getElementById("kpiChart"),{
+  type:"bar",
   data:{labels:["Uso Sillas","No Llegan","Extras","Ticket ($)","Prod. Costo","Ganancia"],
     datasets:[
       {label:"Nosotros",data:[64,9.1,22,42,11.8,10.7],backgroundColor:accent,borderRadius:5},
@@ -831,24 +1013,140 @@ new Chart(document.getElementById("kpiChart"),{type:"bar",
     ]},
   options:{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.y}}},
-    scales:{y:{beginAtZero:true,grid:{color:"rgba(0,0,0,0.06)"}},
-      x:{grid:{display:false}}}}
+    scales:{y:{beginAtZero:true,grid:{color:"rgba(0,0,0,0.06)"}},x:{grid:{display:false}}}}
 });
 
-// Scenario
+// Scenario (static)
 (function(){
   const ctx=document.getElementById("scenarioChart").getContext("2d");
-  new Chart(ctx,{type:"bar",data:{labels:["Ingresos","Ganancia Bruta","Gastos","Ganancia Neta"],
-    datasets:[
-      {label:"Hoy",data:[648800,505300,435900,69400],backgroundColor:purple,borderRadius:8},
-      {label:"Con Cambios",data:[782500,633800,485100,148700],backgroundColor:teal,borderRadius:8}
-    ]},
+  new Chart(ctx,{type:"bar",
+    data:{labels:["Ingresos","Ganancia Bruta","Gastos","Ganancia Neta"],
+      datasets:[
+        {label:"Hoy",data:[648800,505300,435900,69400],backgroundColor:purple,borderRadius:8},
+        {label:"Con Cambios",data:[782500,633800,485100,148700],backgroundColor:teal,borderRadius:8}
+      ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmt$(c.parsed.y)}}},
-      scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:"rgba(0,0,0,0.06)"}},
+      plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmt$(c.parsed.y))}}},
+      scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"}�rid:{color:"rgba(0,0,0,0.06)"}},
         x:{grid:{display:false}}}}
   });
 })();
+
+// ─── UPDATE ENGINE ─────────────────────────────────────────────────────────────
+function updateCharts(){
+  // Revenue
+  C.rev.data.datasets[0].data=revByMonth();
+  C.rev.data.datasets[0].backgroundColor=monthColors(C.rev._baseColors);
+  C.rev.update("none");
+
+  // Clients
+  C.cli.data.datasets[0].data=cliByMonth();
+  C.cli.data.datasets[0].pointBackgroundColor=MONTHS.map((_,i)=>i===S.m?gold:purple2);
+  C.cli.data.datasets[0].pointRadius=MONTHS.map((_,i)=>i===S.m?8:4);
+  C.cli.update("none");
+
+  // Utilization trend
+  C.util.data.datasets[0].data=utilByMonth();
+  C.util.data.datasets[0].pointBackgroundColor=MONTHS.map((_,i)=>i===S.m?purple:gold2);
+  C.util.data.datasets[0].pointRadius=MONTHS.map((_,i)=>i===S.m?8:4);
+  C.util.update("none");
+
+  // Day rev
+  C.drev.data.datasets[0].data=dayRev();
+  C.drev.update("none");
+
+  // Day util
+  const du=dayUtil();
+  C.dutil.data.datasets[0].data=du;
+  C.dutil.data.datasets[0].backgroundColor=du.map(v=>v>=75?teal:v>=60?gold:accent);
+  C.dutil.update("none");
+
+  // Service pie
+  C.svc.data.datasets[0].data=svcMix();
+  C.svc.update("none");
+}
+
+function updateKPIs(){
+  const rev=totalRev();
+  const cli=totalCli();
+  const util=avgUtil();
+  const ticket=Math.round(rev/cli);
+  const ns=parseFloat(noShow());
+  const pr=parseFloat(profitPct());
+
+  const isMonth=S.m!==-1;
+  const mLabel=isMonth?"("+MONTHS[S.m]+")":"(YTD)";
+  const mTarget=isMonth?45000:540000;
+  const mTargetStr=isMonth?"Meta: $45,000":"Meta: $540,000";
+
+  setText("kpi-rev-label","Ingresos "+mLabel);
+  setText("kpi-rev",fmt$(rev));
+  setText("kpi-rev-target",mTargetStr);
+  setStatus("kpi-rev-status",rev/mTarget,.95,.8,true);
+
+  setText("kpi-util",util+"%");
+  setStatus("kpi-util-status",util/78,.95,.8,true);
+
+  setText("kpi-ticket",fmt$(ticket));
+  setStatus("kpi-ticket-status",ticket/52,.95,.8,true);
+
+  setText("kpi-noshow",ns.toFixed(1)+"%");
+  setStatus("kpi-noshow-status",5/ns,.95,.8,true); // lower is better → invert ratio
+
+  setText("kpi-profit",pr.toFixed(1)+"%");
+  setStatus("kpi-profit-status",pr/15,.95,.8,true);
+}
+
+function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+
+function setStatus(id,ratio,okThresh,warnThresh,higherBetter){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(ratio>=okThresh){el.textContent="En meta";el.className="status ok";}
+  else if(ratio>=warnThresh){el.textContent="Un poco abajo";el.className="status warn";}
+  else{el.textContent="Nectesita atenci\u00f3n";el.className="status bad";}
+}
+
+function updateFilterLabel(){
+  const bName=S.b===-1?"todos los barberos":BARBERS[S.b];
+  const mName=S.m===-1?"todos los meses":MONTHS[S.m];
+  document.getElementById("filterLabel").textContent=
+    "Mostrando "+mName+" \u00b7 "+bName;
+}
+
+function updatePills(){
+  // Month pills
+  document.querySelectorAll("#monthPills .fpill").forEach(p=>{
+    const v=parseInt(p.dataset.m);
+    p.classList.toggle("active",v===S.m);
+  });
+  // Barber pills
+  document.querySelectorAll("#barberPills .fpill").forEach(p=>{
+    const v=parseInt(p.dataset.b);
+    const isActive=v===S.b;
+    p.classList.toggle("active",isActive&&v�==-1);
+    p.classList.toggle("barber-active",isActive&&v!==-1);
+  });
+}
+
+function render(){
+  updateCharts();
+  updateKPIs();
+  updateFilterLabel();
+  updatePills();
+}
+
+// ─── FILTER CONTROLS ──────────────────────────────────────────────────────────
+function setMonth(m){S.m=m;render();}
+function setBarber(b){S.b=b;render();}
+function resetFilters(){S.m=-1;S.b=-1;render();}
+
+document.querySelectorAll("#monthPills .fpill").forEach(p=>{
+  p.addEventListener("click",()=>setMonth(parseInt(p.dataset.m)));
+});
+document.querySelectorAll("#barberPills .fpill").forEach(p=> {
+  p.addEventListener("click",()=>setBarber(parseInt(p.dataset.b)));
+});
 </script>
 </body>
 </html>
