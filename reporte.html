@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio M - Reporte Financiero Abril 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  :root{
+    --accent:#c0392b;--accent2:#e74c3c;
+    --gold:#e67e22;--gold2:#f39c12;
+    --teal:#1a9e8f;--teal2:#16a085;
+    --purple:#5b4fcf;--purple2:#7c6fe0;
+    --sky:#2980b9;--sky2:#3498db;
+    --bg:#f4f2ee;--card:#ffffff;
+    --glass:rgba(0,0,0,0.02);
+    --border:rgba(0,0,0,0.1);
+    --text:#2c3e50;--muted:#7f8c8d;
+    --good:#1a9e8f;--bad:#c0392b;--warn:#e67e22;
+    --heading:#1a1a2e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.6;
+    min-height:100vh;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px}
+
+  /* Toolbar */
+  .toolbar{position:sticky;top:0;z-index:50;padding:12px 0;display:flex;gap:10px;justify-content:flex-end;
+    background:linear-gradient(180deg,rgba(244,242,238,.98) 60%,transparent)}
+  .btn{background:linear-gradient(135deg,var(--heading),#2c3e50);color:#fff;border:none;
+    padding:10px 22px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;
+    letter-spacing:.5px;transition:transform .15s,box-shadow .15s;
+    box-shadow:0 4px 15px rgba(0,0,0,.12)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+
+  /* Header */
+  header{
+    background:linear-gradient(135deg,#1a1a2e 0%,#2c3e50 50%,#34495e 100%);
+    border:1px solid rgba(0,0,0,.05);border-radius:20px;
+    padding:48px 48px 44px;margin-bottom:32px;position:relative;overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.1);
+  }
+  header::before{content:"";position:absolute;top:-80px;right:-80px;width:300px;height:300px;
+    border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%)}
+  header::after{content:"";position:absolute;bottom:-60px;left:-60px;width:250px;height:250px;
+    border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%)}
+  header .tag{display:inline-block;background:rgba(255,255,255,.15);
+    color:#fff;padding:6px 16px;border-radius:20px;font-weight:700;font-size:11px;
+    text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px}
+  header h1{font-size:36px;font-weight:900;letter-spacing:-.5px;color:#fff}
+  header .sub{color:rgba(255,255,255,.7);font-size:15px;margin-top:6px;font-weight:500}
+
+  /* Sections */
+  h2.section{font-size:20px;color:var(--heading);margin:44px 0 18px;padding-bottom:12px;
+    border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px;font-weight:800}
+  h2.section .num{background:linear-gradient(135deg,var(--heading),#2c3e50);
+    color:#fff;width:32px;height:32px;border-radius:10px;display:inline-flex;
+    align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+
+  /* Cards */
+  .card{background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:24px;margin-bottom:20px;
+    transition:transform .2s,box-shadow .2s;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.1)}
+
+  /* KPI Scorecards */
+  .scorecard{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .score{background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:20px;text-align:center;position:relative;overflow:hidden;
+    transition:transform .2s,box-shadow .2s}
+  .score:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+  .score .glow{position:absolute;top:0;left:0;right:0;height:3px}
+  .score .slabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .score .sval{font-size:26px;font-weight:900;margin:8px 0 4px;letter-spacing:-.5px}
+  .score .starget{font-size:12px;color:var(--muted)}
+  .score .status{margin-top:10px;font-size:10px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.8px;padding:5px 12px;border-radius:8px;display:inline-block}
+  .status.ok{background:rgba(26,158,143,.1);color:var(--teal)}
+  .status.warn{background:rgba(230,126,34,.1);color:var(--gold)}
+  .status.bad{background:rgba(192,57,43,.1);color:var(--accent)}
+
+  /* Summary box */
+  .summary-box{background:linear-gradient(135deg,rgba(91,79,207,.04),rgba(192,57,43,.02));
+    border:1px solid rgba(91,79,207,.15);border-left:4px solid var(--purple);
+    padding:20px 24px;border-radius:14px;margin:0 0 28px}
+  .summary-box h3{font-size:16px;font-weight:800;color:var(--purple);margin-bottom:12px}
+  .summary-box ul{padding-left:20px}
+  .summary-box li{margin-bottom:6px;color:var(--text);font-size:14px}
+  .summary-box li strong{color:var(--heading)}
+
+  /* Charts */
+  .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .chart-wrap{background:var(--card);border:1px solid var(--border);
+    border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);
+    transition:transform .2s}
+  .chart-wrap:hover{transform:translateY(-2px)}
+  .chart-wrap h3{margin:0 0 12px;font-size:14px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .chart-wrap .cnt{position:relative;height:280px}
+  .chart-full .cnt{height:340px}
+
+  /* Tables */
+  table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+  thead th{background:var(--heading);color:rgba(255,255,255,.85);
+    font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.8px;
+    padding:12px 14px;text-align:left;border-bottom:2px solid var(--border)}
+  thead th:first-child{border-radius:10px 0 0 0}
+  thead th:last-child{border-radius:0 10px 0 0}
+  td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:hover td{background:rgba(0,0,0,.02)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+
+  .pill{display:inline-block;padding:4px 12px;border-radius:8px;font-size:10px;
+    font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+  .pill.red{background:rgba(192,57,43,.1);color:var(--accent)}
+  .pill.amber{background:rgba(230,126,34,.1);color:var(--gold)}
+  .pill.green{background:rgba(26,158,143,.1);color:var(--teal)}
+
+  /* Heatmap */
+  .heatmap{border-collapse:separate;border-spacing:4px;width:100%}
+  .heatmap th{background:transparent;color:var(--muted);padding:8px 4px;text-align:center;
+    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:none}
+  .heatmap td{text-align:center;padding:14px 6px;font-weight:800;font-size:13px;
+    border-radius:10px;border:none;transition:transform .15s}
+  .heatmap td:hover{transform:scale(1.08)}
+  .heatmap .row-label{background:var(--heading);
+    color:#fff;text-align:center;padding:12px 8px;font-weight:800;border-radius:10px}
+
+  /* Direction arrows */
+  .dir{font-weight:800;font-size:13px;display:inline-flex;align-items:center;gap:4px}
+  .dir.up{color:var(--teal)}.dir.up::before{content:"\2191"}
+  .dir.down{color:var(--accent)}.dir.down::before{content:"\2193"}
+  .dir.flat{color:var(--muted)}.dir.flat::before{content:"\2192"}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  ul.clean{padding-left:20px}
+  ul.clean li{margin-bottom:8px;font-size:14px}
+
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
+    color:var(--muted);font-size:12px;text-align:center}
+
+  /* Big number callouts */
+  .callout-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .callout{background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:20px;text-align:center;position:relative;overflow:hidden}
+  .callout .big{font-size:36px;font-weight:900;letter-spacing:-1px}
+  .callout .desc{font-size:12px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .callout.red .big{color:var(--accent)}
+  .callout.gold .big{color:var(--gold)}
+  .callout.teal .big{color:var(--teal)}
+  .callout.purple .big{color:var(--purple)}
+
+  @media print{
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
+    body{background:#fff !important}
+    .toolbar{display:none !important}
+    .wrap{max-width:100%;padding:0 8px;margin:0}
+
+    /* Remove all hover/transform effects */
+    *{transition:none !important;transform:none !important}
+
+    /* Flatten all containers */
+    header,.card,.chart-wrap,.score,.callout,.summary-box{
+      box-shadow:none !important;border:1px solid #ccc !important}
+
+    /* Force single-column layouts so nothing gets cut */
+    .scorecard{grid-template-columns:repeat(5,1fr) !important;gap:8px !important}
+    .chart-row{grid-template-columns:1fr !important;gap:12px !important}
+    .two-col{grid-template-columns:1fr !important;gap:12px !important}
+    .callout-row{grid-template-columns:repeat(3,1fr) !important;gap:8px !important}
+
+    /* Charts: auto height so they scale to fit, no overflow */
+    .chart-wrap .cnt{height:240px !important;overflow:visible !important}
+    .chart-full .cnt{height:280px !important}
+    canvas{max-width:100% !important}
+
+    /* Heatmap: shrink to fit */
+    .heatmap{font-size:10px !important;border-spacing:2px !important}
+    .heatmap td{padding:8px 3px !important;font-size:11px !important}
+    .heatmap .row-label{padding:8px 4px !important;font-size:10px !important}
+
+    /* Tables: prevent overflow */
+    table{font-size:11px !important;width:100% !important;table-layout:fixed !important}
+    td,th{padding:8px 10px !important;word-wrap:break-word !important;overflow-wrap:break-word !important}
+
+    /* Scorecards: compact */
+    .score{padding:12px 8px !important}
+    .score .sval{font-size:20px !important}
+    .score .slabel{font-size:9px !important}
+    .score .starget{font-size:10px !important}
+
+    /* Page settings */
+    @page{size:letter;margin:8mm}
+
+    /* Avoid page breaks inside key elements */
+    .card,.chart-wrap,.score,.callout,.summary-box{break-inside:avoid;page-break-inside:avoid}
+    h2.section{page-break-after:avoid;break-after:avoid}
+    table{break-inside:auto}
+    tr{break-inside:avoid;page-break-inside:avoid}
+
+    /* Force chart rows to stack and each take full width */
+    .chart-wrap{width:100% !important;margin-bottom:12px !important}
+
+    /* Section spacing */
+    h2.section{margin-top:24px !important}
+    header{padding:24px !important;margin-bottom:16px !important}
+    header h1{font-size:28px !important}
+  }
+  @media (max-width:780px){
+    .scorecard{grid-template-columns:repeat(2,1fr)}
+    .chart-row,.two-col,.callout-row{grid-template-columns:1fr}
+    header h1{font-size:26px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="toolbar">
+    <button class="btn" onclick="window.print()">Exportar PDF / Imprimir</button>
+  </div>
+
+  <header>
+    <div class="tag">Reporte Financiero</div>
+    <h1>Studio M</h1>
+    <div class="sub">Abril 2026 &middot; 4 sillas &middot; 5 barberos &middot; Martes a S&aacute;bado</div>
+  </header>
+
+  <!-- RESUMEN -->
+  <div class="summary-box">
+    <h3>Resumen</h3>
+    <ul>
+      <li>Los ingresos van creciendo, pero estamos <strong>10% abajo</strong> de la meta del a&ntilde;o.</li>
+      <li>Solo usamos el <strong>64% del tiempo</strong> de las sillas. Eso quiere decir que 1 de cada 3 horas no genera dinero.</li>
+      <li>Los <strong>s&aacute;bados</strong> trabajan al 94%. Los <strong>martes y mi&eacute;rcoles</strong> est&aacute;n abajo del 50%.</li>
+      <li>El <strong>58% de las citas</strong> son solo corte de pelo. Pocos clientes agregan barba, color u otros servicios.</li>
+    </ul>
+  </div>
+
+  <!-- 1. TARJETA EJECUTIVA -->
+  <h2 class="section"><span class="num">1</span>Estado General del Negocio</h2>
+  <div class="card">
+    <div class="scorecard">
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--warn),transparent)"></div>
+        <div class="slabel">Ingresos (YTD)</div>
+        <div class="sval" style="color:var(--gold)">$486,200</div>
+        <div class="starget">Meta: $540,000</div>
+        <div class="status warn">Un poco abajo</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--bad),transparent)"></div>
+        <div class="slabel">Uso de Sillas</div>
+        <div class="sval" style="color:var(--accent)">64%</div>
+        <div class="starget">Meta: 78%</div>
+        <div class="status bad">Necesita atenci&oacute;n</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--warn),transparent)"></div>
+        <div class="slabel">Ticket Promedio</div>
+        <div class="sval" style="color:var(--gold)">$42</div>
+        <div class="starget">Meta: $52</div>
+        <div class="status warn">Un poco abajo</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--bad),transparent)"></div>
+        <div class="slabel">Clientes que No Llegan</div>
+        <div class="sval" style="color:var(--accent)">9.1%</div>
+        <div class="starget">Meta: menos de 5%</div>
+        <div class="status bad">Necesita atenci&oacute;n</div>
+      </div>
+      <div class="score">
+        <div class="glow" style="background:linear-gradient(90deg,var(--warn),transparent)"></div>
+        <div class="slabel">Ganancia Neta</div>
+        <div class="sval" style="color:var(--gold)">10.7%</div>
+        <div class="starget">Meta: 15%</div>
+        <div class="status warn">Un poco abajo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. TEMPORADAS -->
+  <h2 class="section"><span class="num">2</span>&iquest;Cu&aacute;ndo Entra M&aacute;s Dinero?</h2>
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Ingresos por Mes</h3>
+      <div class="cnt"><canvas id="revChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Clientes por Mes</h3>
+      <div class="cnt"><canvas id="clientChart"></canvas></div>
+    </div>
+  </div>
+  <div class="summary-box" style="margin-top:20px">
+    <h3>Temporadas del A&ntilde;o</h3>
+    <ul>
+      <li><strong>Meses fuertes:</strong> Junio, Julio y Diciembre. El verano, las bodas y las fiestas traen m&aacute;s clientes.</li>
+      <li><strong>Meses lentos:</strong> Enero y Febrero. Despu&eacute;s de las fiestas, la gente gasta menos. Los ingresos bajan 25 a 30%.</li>
+      <li><strong>Regreso a clases:</strong> Agosto y septiembre suben un 12% porque los estudiantes necesitan cortarse el pelo.</li>
+      <li><strong>Antes de Navidad:</strong> Las &uacute;ltimas 2 semanas de noviembre y las primeras 3 de diciembre son las m&aacute;s ocupadas del a&ntilde;o.</li>
+    </ul>
+  </div>
+
+  <!-- 3. DIAS Y HORAS -->
+  <h2 class="section"><span class="num">3</span>&iquest;Qu&eacute; D&iacute;as y Horas Son los M&aacute;s Ocupados?</h2>
+
+  <div class="callout-row">
+    <div class="callout teal">
+      <div class="big">S&aacute;bado</div>
+      <div class="desc">D&iacute;a m&aacute;s ocupado (94%)</div>
+    </div>
+    <div class="callout red">
+      <div class="big">Martes</div>
+      <div class="desc">D&iacute;a m&aacute;s vac&iacute;o (46%)</div>
+    </div>
+    <div class="callout gold">
+      <div class="big">2-3pm</div>
+      <div class="desc">Hora m&aacute;s lenta cada d&iacute;a</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--muted);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">
+      Mapa de Calor: Clientes por hora (promedio de los &uacute;ltimos 90 d&iacute;as)
+    </h3>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:16px">
+      Los n&uacute;meros muestran cu&aacute;ntos clientes hay por hora. Tenemos 4 sillas, entonces 4.0 es el m&aacute;ximo.
+      <span style="color:var(--teal);font-weight:700">Verde = lleno</span>,
+      <span style="color:var(--gold);font-weight:700">Amarillo = medio</span>,
+      <span style="color:var(--accent);font-weight:700">Rojo = vac&iacute;o</span>.
+    </p>
+    <table class="heatmap" id="heatmapTable">
+      <thead>
+        <tr><th></th><th>9am</th><th>10am</th><th>11am</th><th>12pm</th><th>1pm</th><th>2pm</th><th>3pm</th><th>4pm</th><th>5pm</th><th>6pm</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="chart-row" style="margin-top:18px">
+    <div class="chart-wrap">
+      <h3>Ingresos por D&iacute;a de la Semana</h3>
+      <div class="cnt"><canvas id="dayRevChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Uso de Sillas por D&iacute;a</h3>
+      <div class="cnt"><canvas id="dayRealChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 4. SERVICIOS -->
+  <h2 class="section"><span class="num">4</span>&iquest;Qu&eacute; Servicios Hacemos y Cu&aacute;nto Ganan?</h2>
+
+  <div class="callout-row">
+    <div class="callout purple">
+      <div class="big">$90/hr</div>
+      <div class="desc">Tratamiento de cuero cabelludo</div>
+    </div>
+    <div class="callout purple">
+      <div class="big">$87/hr</div>
+      <div class="desc">Color / cubrir canas</div>
+    </div>
+    <div class="callout gold">
+      <div class="big">$70/hr</div>
+      <div class="desc">Corte solo (58% de citas)</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Tipos de Servicio (% de citas)</h3>
+      <div class="cnt"><canvas id="servicePie"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Dinero que Gana Cada Servicio por Hora</h3>
+      <div class="cnt"><canvas id="serviceTicket"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Servicio</th><th>% de Citas</th><th>Precio</th><th>Tiempo</th><th>Ganancia/Hora</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr><td>Corte de pelo</td><td class="num">58%</td><td class="num">$35</td><td class="num">30 min</td><td class="num">$70</td><td>Es lo que m&aacute;s hacemos. Pocos agregan otro servicio.</td></tr>
+        <tr><td>Corte + Barba</td><td class="num">18%</td><td class="num">$50</td><td class="num">40 min</td><td class="num">$75</td><td>Est&aacute; creciendo. Subi&oacute; 4% este a&ntilde;o.</td></tr>
+        <tr><td>Solo Barba</td><td class="num">8%</td><td class="num">$20</td><td class="num">15 min</td><td class="num">$80</td><td>R&aacute;pido y buen dinero por hora. Bueno para llenar huecos.</td></tr>
+        <tr><td>Corte Ni&ntilde;os</td><td class="num">7%</td><td class="num">$22</td><td class="num">20 min</td><td class="num">$66</td><td>Casi todos vienen los s&aacute;bados. Quitan silla a adultos.</td></tr>
+        <tr><td>Afeitada con Toalla</td><td class="num">4%</td><td class="num">$40</td><td class="num">30 min</td><td class="num">$80</td><td>Servicio premium. Usa m&aacute;s producto.</td></tr>
+        <tr><td>Color / Cubrir Canas</td><td class="num">3%</td><td class="num">$65</td><td class="num">45 min</td><td class="num">$87</td><td>La mejor ganancia por hora. No lo estamos promoviendo.</td></tr>
+        <tr><td>Tratamiento Cuero Cabelludo</td><td class="num">2%</td><td class="num">$30</td><td class="num">20 min</td><td class="num">$90</td><td>Lo que m&aacute;s gana por hora. Solo se ofrece como extra.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="summary-box" style="margin-top:18px">
+    <ul>
+      <li>El <strong>58% de las citas</strong> son solo corte a $35. Eso baja el ticket promedio.</li>
+      <li>El color ($87/hr) y el tratamiento de cuero cabelludo ($90/hr) son los que <strong>m&aacute;s dinero ganan por hora</strong>, pero solo son el 5% de las citas.</li>
+      <li>Los cortes de ni&ntilde;os se juntan los s&aacute;bados. Ocupan sillas que podr&iacute;an tener un adulto pagando $50.</li>
+    </ul>
+  </div>
+
+  <!-- 5. USO DE SILLAS -->
+  <h2 class="section"><span class="num">5</span>&iquest;Por Qu&eacute; Se Pierde Tiempo de Silla?</h2>
+
+  <div class="callout-row">
+    <div class="callout red">
+      <div class="big">36%</div>
+      <div class="desc">Del tiempo no genera dinero</div>
+    </div>
+    <div class="callout gold">
+      <div class="big">$225K</div>
+      <div class="desc">Dinero perdido al a&ntilde;o</div>
+    </div>
+    <div class="callout teal">
+      <div class="big">64%</div>
+      <div class="desc">Tiempo productivo actual</div>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Uso de Sillas por Mes</h3>
+      <div class="cnt"><canvas id="realChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>&iquest;A D&oacute;nde Se Va el Tiempo?</h3>
+      <div class="cnt"><canvas id="lostCapChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Raz&oacute;n</th><th>% del Tiempo</th><th>Dinero Perdido al A&ntilde;o</th><th>&iquest;Se puede arreglar?</th></tr></thead>
+      <tbody>
+        <tr><td>Nadie reserv&oacute; la silla</td><td class="num">18%</td><td class="num">$112,400</td><td><span class="pill amber">En parte</span></td></tr>
+        <tr><td>Clientes que no llegaron</td><td class="num">9%</td><td class="num">$56,200</td><td><span class="pill green">S&iacute;</span></td></tr>
+        <tr><td>Huecos entre citas</td><td class="num">5%</td><td class="num">$31,200</td><td><span class="pill green">S&iacute;</span></td></tr>
+        <tr><td>Descansos, limpieza, admin</td><td class="num">4%</td><td class="num">$25,000</td><td><span class="pill amber">En parte</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 6. GASTOS -->
+  <h2 class="section"><span class="num">6</span>&iquest;En Qu&eacute; Se Gasta el Dinero?</h2>
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <h3>Gastos por Categor&iacute;a</h3>
+      <div class="cnt"><canvas id="expPie"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Cada Gasto como % de los Ingresos</h3>
+      <div class="cnt"><canvas id="expBar"></canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>Gasto</th><th>Al A&ntilde;o</th><th>% de Ingresos</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr><td>Pago a Barberos</td><td class="num">$298,200</td><td class="num">46.0%</td><td>Comisiones, salario, impuestos.</td></tr>
+        <tr><td><strong>Productos</strong> <span class="pill red">Alto</span></td><td class="num">$76,600</td><td class="num">11.8%</td><td>Gel, cera, navajas, toallas. La meta es 8%.</td></tr>
+        <tr><td>Renta</td><td class="num">$72,000</td><td class="num">11.1%</td><td>Local y mantenimiento.</td></tr>
+        <tr><td>Recepci&oacute;n / Admin</td><td class="num">$42,120</td><td class="num">6.5%</td><td>Recepcionista, sistema de citas, tel&eacute;fono.</td></tr>
+        <tr><td>Servicios (luz, agua)</td><td class="num">$18,200</td><td class="num">2.8%</td><td>Electricidad, agua, internet, POS.</td></tr>
+        <tr><td>Comisiones de Tarjeta</td><td class="num">$17,500</td><td class="num">2.7%</td><td>Arriba de la meta de 2.5%.</td></tr>
+        <tr><td>Marketing</td><td class="num">$16,200</td><td class="num">2.5%</td><td>Redes sociales, Google, letreros.</td></tr>
+        <tr><td>Seguro</td><td class="num">$10,800</td><td class="num">1.7%</td><td>Responsabilidad civil, accidentes.</td></tr>
+        <tr><td>Equipo / Reparaciones</td><td class="num">$9,800</td><td class="num">1.5%</td><td>Sillas, m&aacute;quinas, aire acondicionado.</td></tr>
+        <tr><td>Otros</td><td class="num">$7,580</td><td class="num">1.2%</td><td>Licencias, m&uacute;sica, lavander&iacute;a.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 7. PROBLEMAS PRINCIPALES -->
+  <h2 class="section"><span class="num">7</span>Los 6 Problemas M&aacute;s Importantes</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Problema</th><th>Cu&aacute;nto Cuesta</th><th>Urgencia</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Solo usamos 64% de las sillas</strong><br><span style="color:var(--muted);font-size:12px">36% del tiempo no genera dinero. La meta es 78%.</span></td>
+          <td>$112K+ perdidos al a&ntilde;o.</td>
+          <td><span class="pill red">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>9.1% de clientes no llegan a su cita</strong><br><span style="color:var(--muted);font-size:12px">Lo normal es 4 a 6%.</span></td>
+          <td>$56K perdidos al a&ntilde;o.</td>
+          <td><span class="pill red">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>Pocos clientes agregan servicios extras</strong><br><span style="color:var(--muted);font-size:12px">Solo 22% agrega barba, color, u otro servicio. La meta es 40%.</span></td>
+          <td>$34K que podr&iacute;amos ganar.</td>
+          <td><span class="pill red">Alta</span></td>
+        </tr>
+        <tr>
+          <td><strong>Martes y Mi&eacute;rcoles medio vac&iacute;os</strong><br><span style="color:var(--muted);font-size:12px">Solo 1.8 clientes por hora con 4 sillas.</span></td>
+          <td>$41K que podr&iacute;amos ganar.</td>
+          <td><span class="pill amber">Media</span></td>
+        </tr>
+        <tr>
+          <td><strong>Gastamos mucho en productos</strong><br><span style="color:var(--muted);font-size:12px">11.8% de los ingresos. La meta es 8%.</span></td>
+          <td>$24K que podr&iacute;amos ahorrar.</td>
+          <td><span class="pill amber">Media</span></td>
+        </tr>
+        <tr>
+          <td><strong>Vendemos muy pocos productos al cliente</strong><br><span style="color:var(--muted);font-size:12px">4.2% de ingresos son de venta de producto. Lo normal es 10 a 15%.</span></td>
+          <td>$38K a $70K que podr&iacute;amos ganar.</td>
+          <td><span class="pill amber">Media</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 8. COMPARACION -->
+  <h2 class="section"><span class="num">8</span>&iquest;C&oacute;mo Estamos Comparados con Otros?</h2>
+  <div class="chart-wrap chart-full">
+    <h3>Studio M vs. Meta vs. Promedio de la Industria</h3>
+    <div class="cnt"><canvas id="kpiChart"></canvas></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <table>
+      <thead><tr><th>M&eacute;trica</th><th>Nosotros</th><th>Industria</th><th>Meta 2026</th></tr></thead>
+      <tbody>
+        <tr><td>Uso de Sillas</td><td class="num">64%</td><td class="num">72 a 82%</td><td class="num">78%</td></tr>
+        <tr><td>Clientes que No Llegan</td><td class="num">9.1%</td><td class="num">4 a 6%</td><td class="num">5.0%</td></tr>
+        <tr><td>Servicios Extra</td><td class="num">22%</td><td class="num">30 a 45%</td><td class="num">40%</td></tr>
+        <tr><td>Ticket Promedio</td><td class="num">$42</td><td class="num">$38 a $55</td><td class="num">$52</td></tr>
+        <tr><td>Costo de Productos</td><td class="num">11.8%</td><td class="num">5 a 10%</td><td class="num">8.0%</td></tr>
+        <tr><td>Costo de Personal</td><td class="num">46.0%</td><td class="num">40 a 50%</td><td class="num">44.0%</td></tr>
+        <tr><td>Venta de Productos</td><td class="num">4.2%</td><td class="num">10 a 15%</td><td class="num">10.0%</td></tr>
+        <tr><td>Ganancia Neta</td><td class="num">10.7%</td><td class="num">10 a 18%</td><td class="num">15.0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 9. PLAN DE ACCION -->
+  <h2 class="section"><span class="num">9</span>Plan de Acci&oacute;n: Pr&oacute;ximos 90 D&iacute;as</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>Acci&oacute;n</th><th>Resultado</th><th>Fecha L&iacute;mite</th><th>Responsable</th></tr></thead>
+      <tbody>
+        <tr><td>Cobrar dep&oacute;sito de $15 y enviar recordatorios SMS</td><td>Recuperar ~$56K</td><td>25 Abr</td><td>Due&ntilde;o</td></tr>
+        <tr><td>Descuento de $5 los martes y mi&eacute;rcoles</td><td>Ganar ~$41K m&aacute;s</td><td>1 May</td><td>Recepci&oacute;n</td></tr>
+        <tr><td>Entrenar barberos para ofrecer barba y color</td><td>Ganar ~$34K m&aacute;s</td><td>10 May</td><td>Barbero L&iacute;der</td></tr>
+        <tr><td>Revisar cu&aacute;nto producto usamos, poner medidores</td><td>Ahorrar ~$24K</td><td>15 May</td><td>Barbero L&iacute;der</td></tr>
+        <tr><td>Mover citas de ni&ntilde;os a martes/mi&eacute;rcoles</td><td>Liberar sillas el s&aacute;bado</td><td>15 May</td><td>Recepci&oacute;n</td></tr>
+        <tr><td>Poner productos a la venta junto a la caja</td><td>Ganar ~$38K+ m&aacute;s</td><td>1 Jun</td><td>Due&ntilde;o</td></tr>
+        <tr><td>Precio extra de $5 viernes por la tarde y s&aacute;bados</td><td>Ganar ~$19K m&aacute;s</td><td>15 Jun</td><td>Due&ntilde;o</td></tr>
+        <tr><td>Guardar 5% cada mes para enero/febrero</td><td>Reserva de $20K</td><td>30 Jun</td><td>Due&ntilde;o</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 10. ESCENARIO -->
+  <h2 class="section"><span class="num">10</span>&iquest;Qu&eacute; Pasa Si Hacemos Todo?</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3 style="color:var(--heading);font-size:16px;font-weight:800;margin-bottom:14px">Cambios que Aplicamos</h3>
+      <ul class="clean">
+        <li>Uso de sillas: de 64% a 78%</li>
+        <li>Clientes que no llegan: de 9.1% a 5%</li>
+        <li>Servicios extra: de 22% a 40%</li>
+        <li>Costo de productos: de 11.8% a 8%</li>
+        <li>Venta de productos: de 4.2% a 10%</li>
+      </ul>
+      <div class="summary-box" style="margin-top:16px;margin-bottom:0">
+        <ul>
+          <li>Los ingresos al a&ntilde;o suben de <strong>$648,800 a $782,500</strong>.</li>
+          <li>La ganancia neta sube de <strong>$69,400 a $148,700</strong>.</li>
+          <li>El margen neto sube de <strong>10.7% a 19.0%</strong>.</li>
+          <li>No necesitamos construcci&oacute;n, contratar, ni comprar equipo caro.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <h3>Hoy vs. Despu&eacute;s de los Cambios (al a&ntilde;o)</h3>
+      <div class="cnt"><canvas id="scenarioChart"></canvas></div>
+    </div>
+  </div>
+
+  <footer>Studio M &middot; Reporte Financiero &middot; Abril 2026</footer>
+</div>
+
+<script>
+const accent="#c0392b",accent2="#e74c3c",gold="#e67e22",gold2="#f39c12",
+      teal="#1a9e8f",teal2="#16a085",purple="#5b4fcf",purple2="#7c6fe0",
+      sky="#2980b9",sky2="#3498db",heading="#1a1a2e",
+      muted="#7f8c8d",dusty="#95a5a6";
+
+Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color="#7f8c8d";
+const fmt$=v=>"$"+v.toLocaleString();
+function makeGrad(ctx,a,b){const g=ctx.createLinearGradient(0,0,0,300);g.addColorStop(0,a);g.addColorStop(1,b);return g;}
+
+const months=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const revenue=[38200,35400,46800,49100,53200,58900,60100,55800,52400,48700,54600,62800];
+const clients=[910,840,1120,1170,1270,1400,1430,1330,1250,1160,1300,1500];
+const realRate=[56,52,62,64,68,74,76,72,67,63,70,78];
+
+// Heatmap
+const heatData={
+  "Mar":[1.2,1.8,2.1,2.4,2.0,1.4,1.6,2.2,2.6,1.8],
+  "Mi\u00e9":[1.4,1.9,2.2,2.5,2.1,1.5,1.7,2.4,2.8,2.0],
+  "Jue":[1.8,2.6,3.0,3.2,2.8,2.0,2.4,3.2,3.6,3.0],
+  "Vie":[2.0,2.8,3.2,3.4,3.0,2.2,2.8,3.6,3.8,3.4],
+  "S\u00e1b":[3.4,3.8,3.8,3.6,3.6,3.4,3.6,3.8,3.2,0]
+};
+(function(){
+  const tbody=document.querySelector("#heatmapTable tbody");
+  for(const[day,vals]of Object.entries(heatData)){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="row-label">${day}</td>`;
+    vals.forEach(v=>{
+      const td=document.createElement("td");
+      if(v===0){td.textContent="Cerrado";td.style.background="#f0f0f0";td.style.color=muted;}
+      else{
+        const pct=v/4;
+        let bg;
+        if(pct>=.85) bg="#1a9e8f";
+        else if(pct>=.7) bg="#2ecc71";
+        else if(pct>=.55) bg="#f39c12";
+        else if(pct>=.4) bg="#f5c96a";
+        else bg="#e74c3c";
+        td.style.background=bg;td.style.color="#fff";
+        td.textContent=v.toFixed(1);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+})();
+
+// Revenue chart
+(function(){
+  const ctx=document.getElementById("revChart").getContext("2d");
+  const colors=revenue.map((_,i)=>{
+    if(i<=1)return accent;if(i>=4&&i<=6)return teal;if(i>=10)return teal;return purple;
+  });
+  new Chart(ctx,{type:"bar",data:{labels:months,datasets:[{label:"Ingresos",data:revenue,
+    backgroundColor:colors,borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
+      scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Client chart
+(function(){
+  const ctx=document.getElementById("clientChart").getContext("2d");
+  const area=ctx.createLinearGradient(0,0,0,280);
+  area.addColorStop(0,"rgba(91,79,207,.25)");area.addColorStop(1,"rgba(91,79,207,.02)");
+  new Chart(ctx,{type:"line",data:{labels:months,datasets:[{label:"Clientes",data:clients,
+    borderColor:purple,backgroundColor:area,fill:true,tension:.4,pointBackgroundColor:purple2,
+    pointRadius:4,pointHoverRadius:7,borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" clientes"}}},
+      scales:{y:{grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Day revenue
+(function(){
+  const ctx=document.getElementById("dayRevChart").getContext("2d");
+  const days=["Mar","Mi\u00e9","Jue","Vie","S\u00e1b"];
+  const dayRev=[1420,1580,2240,2680,2840];
+  const colors=[accent,accent,purple,purple2,teal];
+  new Chart(ctx,{type:"bar",data:{labels:days,datasets:[{label:"Ingreso Promedio",data:dayRev,
+    backgroundColor:colors,borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.parsed.y)}}},
+      scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Day realization
+(function(){
+  const ctx=document.getElementById("dayRealChart").getContext("2d");
+  const days=["Mar","Mi\u00e9","Jue","Vie","S\u00e1b"];
+  const dayReal=[46,51,68,79,94];
+  const colors=dayReal.map(v=>v>=75?teal:v>=60?gold:accent);
+  new Chart(ctx,{type:"bar",data:{labels:days,datasets:[{label:"Uso %",data:dayReal,
+    backgroundColor:colors,borderRadius:8,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+"%"}}},
+      scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"},max:100},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Service pie
+new Chart(document.getElementById("servicePie"),{type:"doughnut",
+  data:{labels:["Corte","Corte+Barba","Solo Barba","Ni\u00f1os","Afeitada","Color","Cuero Cab."],
+    datasets:[{data:[58,18,8,7,4,3,2],
+      backgroundColor:[purple,teal,sky,gold,accent,purple2,teal2],borderWidth:2,borderColor:"#fff"}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:"60%",
+    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11},padding:8}},
+      tooltip:{callbacks:{label:c=>c.label+": "+c.parsed+"%"}}}}
+});
+
+// Revenue per hour
+(function(){
+  const ctx=document.getElementById("serviceTicket").getContext("2d");
+  new Chart(ctx,{type:"bar",data:{labels:["Corte","Corte+B","Barba","Ni\u00f1os","Afeitada","Color","Cuero C."],
+    datasets:[
+      {label:"Precio",data:[35,50,20,22,40,65,30],backgroundColor:purple,borderRadius:5},
+      {label:"Ganancia/Hora",data:[70,75,80,66,80,87,90],backgroundColor:teal,borderRadius:5}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": $"+c.parsed.y}}},
+      scales:{y:{ticks:{callback:v=>"$"+v},grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+})();
+
+// Realization trend
+(function(){
+  const ctx=document.getElementById("realChart").getContext("2d");
+  const area=ctx.createLinearGradient(0,0,0,280);
+  area.addColorStop(0,"rgba(230,126,34,.2)");area.addColorStop(1,"rgba(230,126,34,.02)");
+  new Chart(ctx,{type:"line",data:{labels:months,datasets:[
+    {label:"Uso de Sillas %",data:realRate,borderColor:gold,backgroundColor:area,fill:true,
+      tension:.4,pointBackgroundColor:gold2,pointRadius:4,pointHoverRadius:7,borderWidth:3},
+    {label:"Meta",data:Array(12).fill(78),borderColor:teal,borderDash:[6,6],borderWidth:2,fill:false,pointRadius:0}
+  ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.y+"%"}}},
+      scales:{y:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"},min:40,max:90},
+        x:{grid:{display:false}}}}
+  });
+})();
+
+// Lost capacity
+(function(){
+  const ctx=document.getElementById("lostCapChart").getContext("2d");
+  new Chart(ctx,{type:"bar",data:{labels:["Tiempo de la Silla"],
+    datasets:[
+      {label:"Productivo (64%)",data:[64],backgroundColor:teal,borderRadius:0},
+      {label:"Sin reserva (18%)",data:[18],backgroundColor:purple,borderRadius:0},
+      {label:"No llegaron (9%)",data:[9],backgroundColor:accent,borderRadius:0},
+      {label:"Huecos (5%)",data:[5],backgroundColor:gold,borderRadius:0},
+      {label:"Admin (4%)",data:[4],backgroundColor:"#bdc3c7",borderRadius:0}
+    ]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom",labels:{boxWidth:12}},
+        tooltip:{callbacks:{label:c=>c.dataset.label}}},
+      scales:{x:{stacked:true,ticks:{callback:v=>v+"%"},max:100,grid:{color:"rgba(0,0,0,0.06)"}},
+        y:{stacked:true,display:false}}}
+  });
+})();
+
+// Expense pie
+new Chart(document.getElementById("expPie"),{type:"doughnut",
+  data:{labels:["Personal","Productos","Renta","Recepci\u00f3n","Servicios","Tarjetas","Marketing","Seguro","Equipo","Otros"],
+    datasets:[{data:[298200,76600,72000,42120,18200,17500,16200,10800,9800,7580],
+      backgroundColor:[purple,gold,teal,accent,sky,purple2,teal2,accent2,dusty,"#bdc3c7"],borderWidth:2,borderColor:"#fff"}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:"58%",
+    plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:10},padding:6}},
+      tooltip:{callbacks:{label:c=>c.label+": "+fmt$(c.parsed)}}}}
+});
+
+// Expense bar
+(function(){
+  const ctx=document.getElementById("expBar").getContext("2d");
+  new Chart(ctx,{type:"bar",data:{labels:["Personal","Productos","Renta","Recepci\u00f3n","Servicios","Tarjetas","Marketing","Seguro"],
+    datasets:[{label:"% de Ingresos",data:[46.0,11.8,11.1,6.5,2.8,2.7,2.5,1.7],
+      backgroundColor:[purple,gold,teal,accent,sky,purple2,teal2,accent2],borderRadius:6}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+"%"}}},
+      scales:{x:{ticks:{callback:v=>v+"%"},grid:{color:"rgba(0,0,0,0.06)"}},
+        y:{grid:{display:false}}}}
+  });
+})();
+
+// KPI comparison
+new Chart(document.getElementById("kpiChart"),{type:"bar",
+  data:{labels:["Uso Sillas","No Llegan","Extras","Ticket ($)","Prod. Costo","Ganancia"],
+    datasets:[
+      {label:"Nosotros",data:[64,9.1,22,42,11.8,10.7],backgroundColor:accent,borderRadius:5},
+      {label:"Meta",data:[78,5.0,40,52,8.0,15.0],backgroundColor:purple,borderRadius:5},
+      {label:"Industria",data:[77,5.0,37,46,7.5,14.0],backgroundColor:teal,borderRadius:5}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.y}}},
+    scales:{y:{beginAtZero:true,grid:{color:"rgba(0,0,0,0.06)"}},
+      x:{grid:{display:false}}}}
+});
+
+// Scenario
+(function(){
+  const ctx=document.getElementById("scenarioChart").getContext("2d");
+  new Chart(ctx,{type:"bar",data:{labels:["Ingresos","Ganancia Bruta","Gastos","Ganancia Neta"],
+    datasets:[
+      {label:"Hoy",data:[648800,505300,435900,69400],backgroundColor:purple,borderRadius:8},
+      {label:"Con Cambios",data:[782500,633800,485100,148700],backgroundColor:teal,borderRadius:8}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"bottom"},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmt$(c.parsed.y)}}},
+      scales:{y:{ticks:{callback:v=>"$"+(v/1000)+"k"},grid:{color:"rgba(0,0,0,0.06)"}},
+        x:{grid:{display:false}}}}
+  });
+})();
+</script>
+</body>
+</html>
